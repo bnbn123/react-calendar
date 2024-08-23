@@ -9,7 +9,6 @@ import ErrorBoundary from "./ErrorBoundary";
 const localizer = luxonLocalizer(DateTime);
 
 const CalendarView = ({ view }) => {
-  console.log("🚀 ~ CalendarView ~ view:", view);
   const { events, openModal } = useContext(EventContext);
 
   // Convert string dates to Luxon DateTime objects
@@ -31,13 +30,16 @@ const CalendarView = ({ view }) => {
           endAccessor="end"
           style={{ height: 500 }}
           view={view}
-          onSelectEvent={openModal}
-          onSelectSlot={(slotInfo) =>
+          onSelectEvent={(event) => {
             openModal({
-              start: DateTime.fromJSDate(slotInfo.start).toISO(),
-              end: DateTime.fromJSDate(slotInfo.end).toISO(),
-            })
-          }
+              ...event,
+              start: DateTime.fromJSDate(event.start).toISO(),
+              end: DateTime.fromJSDate(event.end).toISO(),
+            });
+          }}
+          onSelectSlot={(slotInfo) => {
+            openModal(slotInfo);
+          }}
           selectable
         />
       </div>

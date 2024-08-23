@@ -12,22 +12,31 @@ export const EventForm = () => {
   useEffect(() => {
     if (modalEvent) {
       setTitle(modalEvent.title || "");
-      setStart(modalEvent.start || DateTime.now().toISO());
-      setEnd(modalEvent.end || DateTime.now().plus({ hours: 1 }).toISO());
+      setStart(formatDateForInput(modalEvent.start));
+      setEnd(formatDateForInput(modalEvent.end));
     } else {
       setTitle("");
-      setStart(DateTime.now().toISO());
-      setEnd(DateTime.now().plus({ hours: 1 }).toISO());
+      setStart(formatDateForInput(DateTime.now().toISO()));
+      setEnd(formatDateForInput(DateTime.now().plus({ hours: 1 }).toISO()));
     }
   }, [modalEvent]);
+
+  //format date for input, keep it consistent
+  const formatDateForInput = (dateString) => {
+    return DateTime.fromISO(dateString).toFormat("yyyy-MM-dd'T'HH:mm");
+  };
+
+  const formatDateForSubmit = (dateString) => {
+    return DateTime.fromISO(dateString).toISO();
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const eventData = {
       id: modalEvent?.id || Date.now(),
       title,
-      start,
-      end,
+      start: formatDateForSubmit(start),
+      end: formatDateForSubmit(end),
     };
     console.log("Submitting event:", eventData);
     if (modalEvent?.id) {

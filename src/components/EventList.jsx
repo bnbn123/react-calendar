@@ -7,7 +7,7 @@ const EventList = () => {
 
   return (
     <div>
-      <h2>Event List</h2>
+      <h2>Event List (Click to edit)</h2>
       <ul>
         {events.map((event) => (
           <li key={event.id} onClick={() => openModal(event)}>
