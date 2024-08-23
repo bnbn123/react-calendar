@@ -8,6 +8,7 @@ export const EventForm = () => {
   const [title, setTitle] = useState("");
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (modalEvent) {
@@ -19,9 +20,9 @@ export const EventForm = () => {
       setStart(formatDateForInput(DateTime.now().toISO()));
       setEnd(formatDateForInput(DateTime.now().plus({ hours: 1 }).toISO()));
     }
+    setError("");
   }, [modalEvent]);
 
-  //format date for input, keep it consistent
   const formatDateForInput = (dateString) => {
     return DateTime.fromISO(dateString).toFormat("yyyy-MM-dd'T'HH:mm");
   };
@@ -30,8 +31,37 @@ export const EventForm = () => {
     return DateTime.fromISO(dateString).toISO();
   };
 
+  const handleStartChange = (e) => {
+    const newStart = e.target.value;
+    setStart(newStart);
+    validateDates(newStart, end);
+  };
+
+  const handleEndChange = (e) => {
+    const newEnd = e.target.value;
+    setEnd(newEnd);
+    validateDates(start, newEnd);
+  };
+
+  const validateDates = (startDate, endDate) => {
+    const now = DateTime.now();
+    const startDateTime = DateTime.fromISO(startDate);
+    const endDateTime = DateTime.fromISO(endDate);
+
+    if (startDateTime < now) {
+      setError("Start date cannot be in the past");
+    } else if (endDateTime < startDateTime) {
+      setError("End date must be after start date");
+    } else {
+      setError("");
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (error) {
+      return;
+    }
     const eventData = {
       id: modalEvent?.id || Date.now(),
       title,
@@ -72,16 +102,19 @@ export const EventForm = () => {
           <input
             type="datetime-local"
             value={start}
-            onChange={(e) => setStart(e.target.value)}
+            onChange={handleStartChange}
+            min={formatDateForInput(DateTime.now().toISO())}
             required
           />
           <input
             type="datetime-local"
             value={end}
-            onChange={(e) => setEnd(e.target.value)}
+            onChange={handleEndChange}
+            min={start}
             required
           />
-          <button type="submit">
+          {error && <p style={{ color: "red" }}>{error}</p>}
+          <button type="submit" disabled={!!error}>
             {modalEvent.id ? "Update" : "Create"} Event
           </button>
           {modalEvent.id && (
