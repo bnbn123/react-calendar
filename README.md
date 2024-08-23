@@ -14,4 +14,5 @@ This project is a dynamic and responsive dashboard for event management, built w
 1. Clone the repository
 2. Run `npm install` to install dependencies
 3. Run `npm run dev` to start the development server
-4. Run `npm test` to run the tests
+4. Run `npm test` to run the tests once
+   4.1 Run `npm test:watch` to run the tests in watch mode
